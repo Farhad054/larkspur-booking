@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+model Service {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String
+  durationMin Int       @map("duration_min")
+  priceCents  Int       @map("price_cents")
+  active      Boolean   @default(true)
+  sortOrder   Int       @default(0) @map("sort_order")
+  bookings    Booking[]
+
+  @@map("services")
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  reference     String        @unique
+  serviceId     String        @map("service_id")
+  service       Service       @relation(fields: [serviceId], references: [id])
+  startsAt      DateTime      @map("starts_at") @db.Timestamptz(3)
+  endsAt        DateTime      @map("ends_at") @db.Timestamptz(3)
+  customerName  String        @map("customer_name")
+  customerEmail String        @map("customer_email")
+  notes         String?
+  status        BookingStatus @default(CONFIRMED)
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  cancelledAt   DateTime?     @map("cancelled_at") @db.Timestamptz(3)
+
+  @@index([startsAt])
+  @@index([status, startsAt])
+  @@map("bookings")
+}

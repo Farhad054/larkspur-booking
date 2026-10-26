@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  poweredByHeader: false,
+  outputFileTracingRoot: path.join(__dirname),
   turbopack: {
     rules: {
       "*.css": {
