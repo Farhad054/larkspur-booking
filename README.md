@@ -40,23 +40,3 @@ npm run dev
 | `sh scripts/lighthouse.sh <dir>` | Lighthouse mobile on every page (needs `npm start -p 3418`)    |
 
 `npm test` and `npm run test:e2e` **wipe the database named by `TEST_DATABASE_URL`**. Never point it at real data.
-
-## Tests
-
-- **Unit** (`tests/unit`): slot availability including overlapping/adjacent bookings, past dates, minimum notice, booking horizon, closed days, timezone ("today" in the business zone vs UTC), DST spring-forward and fall-back, plus input validation, admin token signing and the rate limiter
-- **Integration** (`tests/integration`, real Postgres): booking creation, concurrency, the exclusion constraint itself, stale-read backstop, cancellation, admin filters
-- **E2E** (`tests/e2e`, Playwright, mobile + desktop): full booking flow, double-booking by two visitors, overlapping services, validation, tampered inputs, rate limiting, admin login/filter/cancel/logout, forged cookie, axe accessibility, console errors and failed requests
-- **CI** (`.github/workflows/ci.yml`): lint → typecheck → migrate → tests → build → e2e, against a Postgres service container
-
-## Deployment
-
-1. **Neon:** create a free project at neon.tech. Copy the **pooled** connection string (`DATABASE_URL`) and the **direct** one (`DIRECT_URL`).
-2. **Migrate and seed once** from your machine: `DIRECT_URL="…" DATABASE_URL="…" npx prisma migrate deploy && DATABASE_URL="…" npm run db:seed`.
-3. **Vercel:** Add New → Project → import the repo. Set env vars: `DATABASE_URL`, `ADMIN_PASSWORD`, `SESSION_SECRET` (`openssl rand -hex 32`), `NEXT_PUBLIC_SITE_URL` (production URL), and optionally `RESEND_API_KEY`, `EMAIL_FROM`.
-4. Deploy. `postinstall` runs `prisma generate`.
-
-## Known limitations / what I'd do next
-
-- One bookable resource (a single tutor). Multiple tutors would add a `tutorId` and include it in the exclusion constraint (`btree_gist`)
-- Rate limiting is in-memory per instance; use Upstash/Redis for strict limits
-- Customers can't self-cancel or reschedule yet (admin only); no reminders or payments
