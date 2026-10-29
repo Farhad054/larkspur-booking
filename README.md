@@ -4,7 +4,7 @@
 
 A small full-stack booking app: list services, pick a day and an open time slot, book, get a confirmation page, and manage bookings from a password-protected admin page.
 
-**Live:** _pending first deploy_ (see [Deployment](#deployment))
+**Live:** https://larkspur-booking.vercel.app
 
 ## Stack
 
